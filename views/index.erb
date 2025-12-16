@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mandrill Transactional API Demo - Ruby</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>🚀 Mandrill Transactional API Demo</h1>
+        <p class="subtitle">Ruby Implementation</p>
+        
+        <div class="section">
+            <div class="section-header">Choose an Email Operation</div>
+            <form method="post" id="scriptForm">
+                <div class="form-group">
+                    <label for="Script_name"><b>Testing Options:</b></label>
+                    <select id="Script_name" name="Script_name" class="form-select" onchange="toggleOptions()">
+                        <option value="single" <%= 'selected' if params['Script_name'] == 'single' %>>
+                            1. Send a Single Email to a Single Recipient
+                        </option>
+                        <option value="mergeTags" <%= 'selected' if params['Script_name'] == 'mergeTags' %>>
+                            2. Send Email with Merge Tags
+                        </option>
+                        <option value="attachments" <%= 'selected' if params['Script_name'] == 'attachments' %>>
+                            3. Send Email with Attachments
+                        </option>
+                        <option value="templates" <%= 'selected' if params['Script_name'] == 'templates' %>>
+                            4. Send Email Using Template
+                        </option>
+                        <option value="allInOne" <%= 'selected' if params['Script_name'] == 'allInOne' %>>
+                            5. Kitchen Sink - All Features
+                        </option>
+                    </select>
+                </div>
+
+                <div class="description-box">
+                    <label><b>Description:</b></label>
+                    <div id="email_description"><%= description %></div>
+                </div>
+
+                <!-- Merge Tags Input Fields -->
+                <div id="merge_tags_inputs" style="display: none;" class="input-section">
+                    <h3>Enter Merge Tag Values:</h3>
+                    <div class="input-grid">
+                        <input id="firstName" name="firstName" type="text" placeholder="First Name" class="form-input">
+                        <input id="lastName" name="lastName" type="text" placeholder="Last Name" class="form-input">
+                        <input id="companyName" name="companyName" type="text" placeholder="Company Name" class="form-input">
+                        <input id="membershipLevel" name="membershipLevel" type="text" placeholder="Membership Level (e.g., Silver, Gold, Platinum)" class="form-input">
+                    </div>
+                </div>
+
+                <!-- Template Selection -->
+                <div id="template_selection" style="display: none;" class="template-section">
+                    <h3>Choose a pre-defined template:(associated with this API key):</h3>For simplicity constant values are used for this demo.
+                    <div class="template-grid">
+                        <div class="template-card">
+                            <input type="radio" name="template_name" value="hello-template" id="hello-template" checked>
+                            <label for="template1">
+                                <div class="template-preview">
+                                    <h4>Template 1</h4>
+                                    <p><strong>Name:</strong>hello-template</p>
+                                    <p><strong>Subject:</strong> Welcome <em>fname</em>!</p>
+                                    <div class="template-body">
+                                        <P>Hello <em>fname</em>!</p>
+                                        <p class="template-highlight">Your own custom message goes here, i.e.
+                                        <strong>The HTML code for the template with mc:edit attributes for the editable elements:</strong></p>   
+                                        <p>Welcome to <em>company_name</em>.<br>Your account: <em>account_id</em></p>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="template-card">
+                            <input type="radio" name="template_name" value="qbo-invoice-template" id="qbo-invoice-template">
+                            <label for="template2">
+                                <div class="template-preview">
+                                    <h4>Template 2</h4>
+                                    <p><strong>Name:</strong>qbo-invoice-template</p>
+                                    <p><strong>Subject:</strong> Payment for invoice is requested</p>
+                                    <div class="template-body">
+                                        <p>Hi {{fname}}</p><br/>DUE End of this month<br/>Bill to:{{fname}}
+                                        <p class="template-highlight">Your own custom message goes here, i.e.
+                                        <strong>The HTML code for the template with mc:edit attributes for the editable elements:</strong></p>   
+                                        <p><br/>Powered by QuickBooks<br/>We appreciate your business! Payment for this invoice is due on month end for account {{account_id}}.<br/>If you have any questions or need help, just let us know.<br/>Best,<br/>QBO team<br/></p>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attachment Info -->
+                <div id="attachment_info" style="display: none;" class="info-box">
+                    <p>ℹ️ This demo will send an email with sample attachments (PDF and dynamically generated text files).</p>
+                    <p>📎 Sample attachment: <a href="/sample.pdf" target="_blank">sample.pdf</a></p>
+                </div>
+
+                <div class="button-container">
+                    <button type="submit" class="btn btn-primary" id="btn_run_script">
+                        📧 Generate Test Email
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Display Email Testing Status -->
+        <% if script_run_status %>
+        <div class="section result-section">
+            <div class="section-header">📬 Email Testing Status</div>
+            <div id="script-run-status">
+                <%= script_run_status %>
+                <p class="check-inbox">✉️ Check your inbox!</p>
+            </div>
+        </div>
+        <% end %>
+
+        <div class="footer">
+            <p>💎 Built with Ruby & Sinatra | 📧 Powered by Mailchimp Transactional API</p>
+        </div>
+    </div>
+
+    <script>
+        function toggleOptions() {
+            var scriptSelect = document.getElementById('Script_name');
+            var mergeTagsInputs = document.getElementById('merge_tags_inputs');
+            var templateSelection = document.getElementById('template_selection');
+            var attachmentInfo = document.getElementById('attachment_info');
+            var description = '';
+
+            // Hide all conditional sections first
+            mergeTagsInputs.style.display = 'none';
+            templateSelection.style.display = 'none';
+            attachmentInfo.style.display = 'none';
+
+            // Remove required attribute from all merge tag inputs
+            document.querySelectorAll('#merge_tags_inputs input').forEach(input => {
+                input.removeAttribute('required');
+            });
+
+            // Show relevant sections based on selection
+            switch(scriptSelect.value) {
+                case 'single':
+                    description = 'Send a single email to a single recipient. This script uses the MailChimp Transactional API to send a simple email with a subject, from name, from email, to name, to email, and content. This script is a good starting point for understanding how to use the MailChimp Transactional API. You can use this script to send a single email to a single recipient, such as a welcome email or a password reset email. For this demo all values will be used from config files.';
+                    break;
+                case 'mergeTags':
+                    mergeTagsInputs.style.display = 'block';
+                    // Add required attribute back
+                    document.querySelectorAll('#merge_tags_inputs input').forEach(input => {
+                        input.setAttribute('required', 'required');
+                    });
+                    description = 'Send an email with merge tags. This script uses the MailChimp Transactional API to send an email with merge tags. Merge tags are placeholders in your email content that are replaced with dynamic data when the email is sent. This script is a good starting point for understanding how to use merge tags with the MailChimp Transactional API. You can use this script to send personalized emails to your recipients, such as a promotional email with their name and a discount code.';
+                    break;
+                case 'attachments':
+                    attachmentInfo.style.display = 'block';
+                    description = 'Send an email with attachments. This script uses the MailChimp Transactional API to send an email with attachments. Attachments can be added to your email by providing a URL to the file or by providing the file as a base64 encoded string. This script is a good starting point for understanding how to use attachments with the MailChimp Transactional API. You can use this script to send emails with attachments, such as a monthly newsletter with a PDF attachment. For simplicity, this demo uses a dynamic text file and sample attachments.';
+                    break;
+                case 'templates':
+                    templateSelection.style.display = 'block';
+                    description = 'Send an email with a template. This script uses the MailChimp Transactional API to send an email with a template. Templates allow you to create reusable email layouts that can be populated with dynamic content. This script is a good starting point for understanding how to use templates with the MailChimp Transactional API. You can use this script to send emails with a consistent look and feel, such as a branded newsletter or a promotional email. For this demo pre-defined email template will be used from the code.';
+                    break;
+                case 'allInOne':
+                    description = 'Send an email with all the supported features. This script uses the MailChimp Transactional API to send an email with all the supported features. This script is a good starting point for understanding how to use all the features with the MailChimp Transactional API. You can use this script to send emails with all the supported features, such as a promotional email with merge tags, attachments, and a template.';
+                    break;
+            }
+
+            document.getElementById('email_description').innerText = description;
+        }
+
+        // Form validation
+        document.getElementById('scriptForm').addEventListener('submit', function(e) {
+            var scriptSelect = document.getElementById('Script_name');
+            
+            // Validate merge tags if selected
+            if (scriptSelect.value === 'mergeTags') {
+                var requiredFields = ['firstName', 'lastName', 'companyName', 'membershipLevel'];
+                var missing = [];
+                
+                requiredFields.forEach(function(id) {
+                    var el = document.getElementById(id);
+                    if (el && el.style.display !== 'none' && !el.value.trim()) {
+                        missing.push(el.placeholder || id);
+                    }
+                });
+                
+                if (missing.length > 0) {
+                    alert('⚠️ Please fill in all required fields: ' + missing.join(', '));
+                    e.preventDefault();
+                    return false;
+                }
+            }
+            
+            // Set form action
+            this.action = '/testEmailbasedOnScriptID';
+        });
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            toggleOptions();
+        });
+    </script>
+</body>
+
+</html>
+
+
+

@@ -1,0 +1,23 @@
+# frozen_string_literal: true
+
+source 'https://rubygems.org'
+
+# Mandrill API client for sending transactional emails
+gem 'MailchimpTransactional', '~> 1.0'
+
+# Load environment variables from .env file
+gem 'dotenv', '~> 2.8'
+
+# Required for Ruby 3.4+ (no longer part of default gems)
+gem 'base64'
+gem 'logger'
+
+# Web server for UI
+gem 'sinatra', '~> 4.0'
+gem 'sinatra-contrib', '~> 4.0'
+gem 'webrick', '~> 1.8'
+gem 'rackup', '~> 2.1'
+
+# JSON for pretty output (included in Ruby standard library)
+# gem 'json' # Not needed - part of Ruby stdlib
+
