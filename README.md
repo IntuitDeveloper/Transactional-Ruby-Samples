@@ -71,7 +71,7 @@ ruby email_with_template.rb
 ruby kitchen_sink_email.rb
 ```
 
-**[Read the Setup Guide →](RUBY_SETUP_GUIDE.md)**
+**[Read the Setup Guide →](README_USECASES_RUBY.md)**
 
 ## 📋 Available Features
 
@@ -139,7 +139,7 @@ Each script demonstrates a specific use case:
 ## 📚 Documentation
 
 - **[WEB_UI_GUIDE.md](WEB_UI_GUIDE.md)** - Complete web UI documentation
-- **[scripts/README_USECASES_RUBY.md](scripts/README.md)** - Script-specific documentation
+- **[scripts/README_USECASES_RUBY.md](scripts/README_USECASES_RUBY.md)** - Script-specific documentation
 - **[use-cases/](use-cases/)** - Individual use case guides
 
 ## 🌟 Key Features

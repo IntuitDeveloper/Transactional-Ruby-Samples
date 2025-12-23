@@ -29,9 +29,9 @@ if ! command -v bundle &> /dev/null; then
 fi
 
 # Install dependencies if needed
-if [ ! -f "Gemfile.lock" ]; then
+if [ ! -f "scripts/Gemfile.lock" ]; then
     echo "📦 Installing dependencies..."
-    bundle install
+    cd scripts && bundle install
     echo ""
 fi
 
