@@ -31,7 +31,7 @@ fi
 # Install dependencies if needed
 if [ ! -f "scripts/Gemfile.lock" ]; then
     echo "📦 Installing dependencies..."
-    cd scripts && bundle install
+    (cd scripts && bundle install)
     echo ""
 fi
 

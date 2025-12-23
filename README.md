@@ -15,11 +15,11 @@ A comprehensive Ruby implementation for testing Mailchimp's Mandrill Transaction
 # Clone or navigate to the project
 cd sampleapp-mandrill-mailchimp-transactional-ruby
 
-# Install dependencies
+# Install dependencies (Gemfile is in scripts directory)
+cd scripts
 bundle install
 
 # Configure environment variables
-cd scripts
 cp env.example .env
 # Edit .env with your Mandrill API key and email settings
 ```
@@ -222,8 +222,8 @@ See the LICENSE file in the root directory.
 ### For Quick Testing (Web UI):
 
 ```bash
-bundle install
 cd scripts
+bundle install
 ruby app.rb
 # Open http://localhost:4567
 ```

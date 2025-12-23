@@ -344,10 +344,10 @@ bundle list
 scripts/
 ├── Gemfile                          # Ruby dependencies
 ├── Gemfile.lock                     # Locked gem versions (created by bundler)
-├── .env                             # Environment variables (create from .env.example)
+├── .env                             # Environment variables (create from env.example)
 ├── env.example                      # Example environment variables
 ├── email_with_single_recipient.rb   # Ruby script for sending email
-└── README_RUBY.md                   # This file
+└── README_USECASES_RUBY.md          # This file
 ```
 
 ## Resources

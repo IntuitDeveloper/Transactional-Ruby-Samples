@@ -12,6 +12,7 @@ The web UI provides an easy-to-use interface for testing all Mandrill email feat
 
 ```bash
 # Install all required gems including web server dependencies
+cd scripts
 bundle install
 ```
 
