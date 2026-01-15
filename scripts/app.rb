@@ -53,6 +53,8 @@ post '/testEmailbasedOnScriptID' do
       run_script_with_template(params['template_name'])
     when 'allInOne'
       run_script('kitchen_sink_email.rb')
+    when 'sms'
+      run_script_with_sms(params)
     else
       { success: false, message: 'Unknown script type' }
     end
@@ -127,6 +129,29 @@ def run_script_with_template(template_name)
   run_script('email_with_template.rb')
 end
 
+# Run SMS script with custom parameters
+def run_script_with_sms(params)
+  to_phone = params['smsToPhone']
+  message_text = params['smsMessage']
+  
+  # Set environment variables for the script
+  ENV['SMS_CUSTOM_TO'] = to_phone if to_phone && !to_phone.empty?
+  ENV['SMS_CUSTOM_MESSAGE'] = message_text if message_text && !message_text.empty?
+  
+  result = run_script('sms_single_recipient.rb')
+  
+  # Clean up environment variables
+  ENV.delete('SMS_CUSTOM_TO')
+  ENV.delete('SMS_CUSTOM_MESSAGE')
+  
+  # Customize success message for SMS
+  if result[:success]
+    result[:message] = result[:message].gsub('Email sent', 'SMS sent')
+  end
+  
+  result
+end
+
 # Get description for each script type
 def get_description(script_type)
   descriptions = {
@@ -138,7 +163,9 @@ def get_description(script_type)
     
     'templates' => 'Send an email with a template. This script uses the Mailchimp Transactional API to send an email with a template. Templates allow you to create reusable email layouts that can be populated with dynamic content. This script is a good starting point for understanding how to use templates with the Mailchimp Transactional API. You can use this script to send emails with a consistent look and feel, such as a branded newsletter or a promotional email. For this demo pre-defined email template will be used from the code.',
     
-    'allInOne' => 'Send an email with all the supported features. This script uses the Mailchimp Transactional API to send an email with all the supported features. This script is a good starting point for understanding how to use all the features with the Mailchimp Transactional API. You can use this script to send emails with all the supported features, such as a promotional email with merge tags, attachments, and a template.'
+    'allInOne' => 'Send an email with all the supported features. This script uses the Mailchimp Transactional API to send an email with all the supported features. This script is a good starting point for understanding how to use all the features with the Mailchimp Transactional API. You can use this script to send emails with all the supported features, such as a promotional email with merge tags, attachments, and a template.',
+    
+    'sms' => 'Send an SMS to a single recipient. This script uses the Mailchimp Transactional API to send an SMS message. SMS messages require a verified sender phone number and recipient consent. You can specify the recipient phone number (E.164 format), message text, and consent type. This is useful for sending transactional SMS notifications like order confirmations, appointment reminders, or verification codes.'
   }
   
   descriptions[script_type] || ''

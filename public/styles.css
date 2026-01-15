@@ -266,6 +266,38 @@ label {
     color: #1565c0;
 }
 
+/* SMS Styles */
+.sms-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.sms-textarea {
+    resize: vertical;
+    min-height: 80px;
+    font-family: inherit;
+}
+
+.char-counter {
+    display: block;
+    text-align: right;
+    color: #666;
+    font-size: 0.85em;
+    margin-top: 5px;
+}
+
+#sms_inputs h3 {
+    color: #667eea;
+    margin-bottom: 15px;
+}
+
+#sms_inputs .info-box {
+    background: #fff3e0;
+    border-left-color: #ff9800;
+    color: #e65100;
+}
+
 .button-container {
     text-align: center;
     margin: 30px 0;

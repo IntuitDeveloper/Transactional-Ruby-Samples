@@ -30,10 +30,12 @@ Edit the `.env` file with your credentials:
 ```env
 MANDRILL_API_KEY=your_mandrill_api_key_here
 DEFAULT_FROM_EMAIL=sender@yourdomain.com
-DEFAULT_FROM_NAME=Your Name
+DEFAULT_FROM_NAME="Your Name"
 DEFAULT_TO_EMAIL=recipient@example.com
-DEFAULT_TO_NAME=Recipient Name
+DEFAULT_TO_NAME="Recipient Name"
 ```
+
+> **Note:** Always quote values that contain spaces or special characters.
 
 ### 3. Start the Web Server
 

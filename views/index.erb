@@ -34,6 +34,9 @@
                         <option value="allInOne" <%= 'selected' if params['Script_name'] == 'allInOne' %>>
                             5. Kitchen Sink - All Features
                         </option>
+                        <option value="sms" <%= 'selected' if params['Script_name'] == 'sms' %>>
+                            📱 6. Send SMS Message
+                        </option>
                     </select>
                 </div>
 
@@ -98,6 +101,33 @@
                     <p>📎 Sample attachment: <a href="/sample.pdf" target="_blank">sample.pdf</a></p>
                 </div>
 
+                <!-- SMS Input Fields -->
+                <div id="sms_inputs" style="display: none;" class="input-section">
+                    <h3>📱 SMS Message Details:</h3>
+                    <div class="sms-grid">
+                        <div class="form-group">
+                            <label for="smsToPhone">Recipient Phone Number (E.164 format):</label>
+                            <input id="smsToPhone" name="smsToPhone" type="tel" 
+                                   placeholder="+1234567890" class="form-input"
+                                   pattern="^\+[1-9]\d{1,14}$"
+                                   title="Phone number in E.164 format (e.g., +1234567890)">
+                        </div>
+                        <div class="form-group">
+                            <label for="smsMessage">Message Text:</label>
+                            <textarea id="smsMessage" name="smsMessage" 
+                                      placeholder="Enter your SMS message here (max 1600 characters)" 
+                                      class="form-input sms-textarea"
+                                      maxlength="1600"
+                                      rows="3"></textarea>
+                            <small class="char-counter"><span id="smsCharCount">0</span>/1600 characters</small>
+                        </div>
+                    </div>
+                    <div class="info-box" style="margin-top: 15px;">
+                        <p>ℹ️ <strong>Note:</strong> Phone numbers must be in E.164 format (e.g., +1234567890). SMS requires a verified sender phone number configured in your Mandrill account.</p>
+                        <p>📝 <strong>Consent:</strong> By default, messages are sent with 'onetime' consent type.</p>
+                    </div>
+                </div>
+
                 <div class="button-container">
                     <button type="submit" class="btn btn-primary" id="btn_run_script">
                         📧 Generate Test Email
@@ -109,10 +139,10 @@
         <!-- Display Email Testing Status -->
         <% if script_run_status %>
         <div class="section result-section">
-            <div class="section-header">📬 Email Testing Status</div>
+            <div class="section-header"><%= params['Script_name'] == 'sms' ? '📱 SMS Testing Status' : '📬 Email Testing Status' %></div>
             <div id="script-run-status">
                 <%= script_run_status %>
-                <p class="check-inbox">✉️ Check your inbox!</p>
+                <p class="check-inbox"><%= params['Script_name'] == 'sms' ? '📱 Check your phone!' : '✉️ Check your inbox!' %></p>
             </div>
         </div>
         <% end %>
@@ -128,17 +158,23 @@
             var mergeTagsInputs = document.getElementById('merge_tags_inputs');
             var templateSelection = document.getElementById('template_selection');
             var attachmentInfo = document.getElementById('attachment_info');
+            var smsInputs = document.getElementById('sms_inputs');
+            var submitBtn = document.getElementById('btn_run_script');
             var description = '';
 
             // Hide all conditional sections first
             mergeTagsInputs.style.display = 'none';
             templateSelection.style.display = 'none';
             attachmentInfo.style.display = 'none';
+            smsInputs.style.display = 'none';
 
             // Remove required attribute from all merge tag inputs
             document.querySelectorAll('#merge_tags_inputs input').forEach(input => {
                 input.removeAttribute('required');
             });
+
+            // Reset button text
+            submitBtn.innerHTML = '📧 Generate Test Email';
 
             // Show relevant sections based on selection
             switch(scriptSelect.value) {
@@ -164,9 +200,23 @@
                 case 'allInOne':
                     description = 'Send an email with all the supported features. This script uses the Mailchimp Transactional API to send an email with all the supported features. This script is a good starting point for understanding how to use all the features with the Mailchimp Transactional API. You can use this script to send emails with all the supported features, such as a promotional email with merge tags, attachments, and a template.';
                     break;
+                case 'sms':
+                    smsInputs.style.display = 'block';
+                    submitBtn.innerHTML = '📱 Send Test SMS';
+                    description = 'Send an SMS to a single recipient. This script uses the Mailchimp Transactional API to send an SMS message. SMS messages require a verified sender phone number and recipient consent. You can specify the recipient phone number (E.164 format), message text, and consent type. This is useful for sending transactional SMS notifications like order confirmations, appointment reminders, or verification codes.';
+                    break;
             }
 
             document.getElementById('email_description').innerText = description;
+        }
+
+        // SMS character counter
+        function updateSmsCharCount() {
+            var textarea = document.getElementById('smsMessage');
+            var counter = document.getElementById('smsCharCount');
+            if (textarea && counter) {
+                counter.textContent = textarea.value.length;
+            }
         }
 
         // Form validation
@@ -199,6 +249,12 @@
         // Initialize on page load
         window.addEventListener('DOMContentLoaded', function() {
             toggleOptions();
+            
+            // Add SMS character counter listener
+            var smsTextarea = document.getElementById('smsMessage');
+            if (smsTextarea) {
+                smsTextarea.addEventListener('input', updateSmsCharCount);
+            }
         });
     </script>
 </body>
